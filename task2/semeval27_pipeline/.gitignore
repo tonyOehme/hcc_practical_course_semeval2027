@@ -1,0 +1,17 @@
+# Datos del shared task: van en Drive, no en el repo
+data/
+
+# Salidas regenerables
+outputs/
+
+# Modelos
+trained_models/
+*.safetensors
+*.bin
+
+# Python / notebooks
+__pycache__/
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
