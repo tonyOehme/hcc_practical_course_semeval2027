@@ -9,6 +9,7 @@ scripts/
   convert_data.py     paso 1: data/dev → outputs/pairs/<LANG>.pairs.tsv (+ .jsonl para entrenar)
   predict_tartunlp.py paso 2: añade la columna prob con el adaptador de TartuNLP
   evaluate_subtask2.py paso 3: métricas → results/
+  make_submission.py  paso 4: prob → <LANG>/subtask2.jsonl + .zip para Codabench
 notebooks/
   02_tartunlp_dev_subtask2.ipynb   los tres pasos en Colab
 ```
@@ -20,6 +21,8 @@ python scripts/convert_data.py --data_dir data/dev --out_dir outputs/pairs
 /content/venv/bin/python scripts/predict_tartunlp.py --pairs outputs/pairs/SV.pairs.tsv \
     --adapter_dir <ruta>/ru/classification --out outputs/preds/SV.tartunlp_ru.tsv
 python scripts/evaluate_subtask2.py --pred outputs/preds/SV.tartunlp_ru.tsv --threshold 0.35 --sweep
+python scripts/make_submission.py --pred SV=outputs/preds/SV.tartunlp_ru.tsv --threshold 0.35 \
+    --data_dir data/dev --out submissions/st2_tartunlp
 ```
 
 `convert_data.py` y `evaluate_subtask2.py` solo necesitan pandas y scikit-learn.
