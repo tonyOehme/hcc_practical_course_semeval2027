@@ -9,14 +9,14 @@ Genera, por idioma (con --tag X: <LANG>.X.pairs.tsv, para no pisar otras variant
     outputs/pairs/<LANG>.pairs.tsv   tabla con metadatos (para predecir y evaluar)
     outputs/pairs/<LANG>.jsonl       formato de entrenamiento de TartuNLP (si hay etiquetas)
 
---steps: none (por defecto) | core | all | lista de pasos (ver semeval27/preprocess.py)
+--steps: none (por defecto) | core | hist | all | lista de pasos (ver semeval27/preprocess.py)
 """
 import argparse
 import sys
 from pathlib import Path
 
 from semeval27.data import list_languages, load_language
-from semeval27.preprocess import ALL_STEPS, CORE_STEPS, change_report, preprocess_usages
+from semeval27.preprocess import ORDER, PRESETS, change_report, preprocess_usages, resolve_steps
 from semeval27.pairs import make_pairs, write_pairs_tsv, write_tartunlp_jsonl
 
 
@@ -27,7 +27,7 @@ def main():
     ap.add_argument("--langs", nargs="*", help="idiomas a convertir (por defecto, todos)")
     ap.add_argument("--mark_target", action="store_true", help="marcar la palabra con <t> </t>")
     ap.add_argument("--steps", nargs="*", default=["none"],
-                    help=f"pasos de limpieza: none | core {CORE_STEPS} | all | nombres de {ALL_STEPS}")
+                    help=f"pasos de limpieza: un preset {list(PRESETS)} o nombres de {ORDER}")
     ap.add_argument("--tag", default="", help="sufijo de los ficheros de salida, p. ej. core")
     args = ap.parse_args()
 
@@ -35,8 +35,7 @@ def main():
     if not langs:
         sys.exit(f"No hay carpetas de idioma con usages.jsonl en {args.data_dir}")
 
-    steps = {"none": [], "core": CORE_STEPS, "all": ALL_STEPS}.get(args.steps[0], args.steps) \
-        if len(args.steps) == 1 else args.steps
+    steps = resolve_steps(args.steps)
     suffix = f".{args.tag}" if args.tag else ""
 
     out = Path(args.out_dir)
