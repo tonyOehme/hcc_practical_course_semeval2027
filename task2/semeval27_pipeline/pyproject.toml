@@ -1,0 +1,44 @@
+# Paquete semeval27: código reutilizable de la Subtask 2.
+#
+# Instalación (desde esta carpeta, task2/semeval27_pipeline):
+#   pip install -e .              -> solo el núcleo (datos, pares, métricas). Basta para CPU.
+#   pip install -e ".[tartunlp]"  -> + el entorno exacto de TartuNLP (predecir / entrenar el adaptador)
+#
+# -e (editable): si cambias el código, no hace falta reinstalar.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "semeval27"
+version = "0.1.0"
+description = "SemEval-2027 Task 3, Subtask 2 (HCC praktikum, TUM)"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scikit-learn>=1.3",
+    "scipy>=1.10",
+    "tqdm",
+]
+
+[project.optional-dependencies]
+# Versiones fijadas: el código de TartuNLP (adapters 0.1.0) no funciona con versiones nuevas.
+# torch 2.1.2 no tiene ruedas para Python 3.12, por eso en Colab se usa un venv con 3.11.
+tartunlp = [
+    "torch==2.1.2",
+    "transformers==4.35.2",
+    "adapters==0.1.0",
+    "datasets==2.15.0",
+    "evaluate==0.4.1",
+    "accelerate==0.25.0",
+    "huggingface-hub==0.19.4",
+    "numpy==1.26.2",
+    "pandas==2.1.4",
+    "pyarrow==14.0.2",
+]
+notebooks = ["ipykernel", "matplotlib"]
+
+[tool.setuptools]
+packages = ["semeval27"]

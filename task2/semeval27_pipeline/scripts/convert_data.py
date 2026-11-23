@@ -11,9 +11,8 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from semeval27.data import list_languages, load_language  # noqa: E402
-from semeval27.pairs import make_pairs, write_pairs_tsv, write_tartunlp_jsonl  # noqa: E402
+from semeval27.data import list_languages, load_language
+from semeval27.pairs import make_pairs, write_pairs_tsv, write_tartunlp_jsonl
 
 
 def main():

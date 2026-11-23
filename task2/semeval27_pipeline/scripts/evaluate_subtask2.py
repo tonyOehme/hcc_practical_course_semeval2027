@@ -15,8 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from semeval27.metrics import baselines, per_word_report, summary, threshold_sweep  # noqa: E402
+from semeval27.metrics import baselines, per_word_report, summary, threshold_sweep
 
 
 def main():

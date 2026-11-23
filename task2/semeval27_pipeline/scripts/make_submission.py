@@ -21,8 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from semeval27.data import read_jsonl  # noqa: E402
+from semeval27.data import read_jsonl
 
 
 def parse_pred_arg(value: str) -> tuple[str, Path]:

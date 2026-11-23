@@ -1,32 +1,59 @@
 # Pipeline Subtask 2 (SemEval-2027 Task 3)
 
 ```
-semeval27/            código reutilizable (se importa desde los scripts)
+pyproject.toml        hace instalable el paquete semeval27 (pip install -e .)
+semeval27/            código reutilizable (se importa desde scripts y notebooks)
   data.py             carga los datos oficiales (usages, definitions, subtask1/2) en un DataFrame
   pairs.py            usos → pares "definición<TAB>uso" (formato TartuNLP)
   metrics.py          F1 por palabra, F1 global, barrido de umbral, baseline "siempre 1"
 scripts/
-  convert_data.py     paso 1: data/dev → outputs/pairs/<LANG>.pairs.tsv (+ .jsonl para entrenar)
+  colab_setup.sh      prepara el entorno en Colab/Kaggle (/content/venv, Python 3.11)
+  convert_data.py     paso 1: datos → <LANG>.pairs.tsv (+ .jsonl para entrenar)
   predict_tartunlp.py paso 2: añade la columna prob con el adaptador de TartuNLP
   evaluate_subtask2.py paso 3: métricas → results/
   make_submission.py  paso 4: prob → <LANG>/subtask2.jsonl + .zip para Codabench
 notebooks/
-  02_tartunlp_dev_subtask2.ipynb   los tres pasos en Colab
+  00_colab_template.ipynb          plantilla para cada experimento nuevo en Colab
+  02_tartunlp_dev_subtask2.ipynb   TartuNLP-ru zero-shot sobre dev SV
+  03_error_analysis.ipynb          análisis de errores (CPU)
 ```
 
-## Uso
+## Cómo se trabaja
+
+- **El código vive en el repo.** Los notebooks solo preparan el entorno y llaman a los scripts o funciones de `semeval27`.
+- **Colab/Kaggle para lo pesado (GPU)**, el PC para escribir código y lo ligero (CPU).
+- **Datos, modelos y resultados en Drive** (`MyDrive/semeval27/...`), nunca en git (`data/`, `outputs/`, `trained_models/` están en `.gitignore`).
+- Si arreglas algo directamente en Colab, pásalo al repo el mismo día.
+
+### Entorno local (Windows, VS Code)
+
+Desde `task2/semeval27_pipeline`:
+
+```
+python -m venv .venv            # solo la primera vez
+.venv\Scripts\activate
+pip install -e .                # núcleo: datos, pares, métricas
+pip install -e ".[tartunlp]"    # opcional: torch/transformers/adapters fijados (CPU, lento)
+```
+
+En VS Code: `Ctrl+Shift+P` → *Python: Select Interpreter* → `.venv`.
+
+### Colab / Kaggle
+
+Copia `notebooks/00_colab_template.ipynb`. Hace `git pull`, ejecuta `bash scripts/colab_setup.sh`
+y deja `PY = '/content/venv/bin/python'` para lanzar los scripts:
 
 ```bash
-python scripts/convert_data.py --data_dir data/dev --out_dir outputs/pairs
-/content/venv/bin/python scripts/predict_tartunlp.py --pairs outputs/pairs/SV.pairs.tsv \
-    --adapter_dir <ruta>/ru/classification --out outputs/preds/SV.tartunlp_ru.tsv
-python scripts/evaluate_subtask2.py --pred outputs/preds/SV.tartunlp_ru.tsv --threshold 0.35 --sweep
-python scripts/make_submission.py --pred SV=outputs/preds/SV.tartunlp_ru.tsv --threshold 0.35 \
-    --data_dir data/dev --out submissions/st2_tartunlp
+$PY scripts/convert_data.py --data_dir $DATA/dev --out_dir outputs/pairs
+$PY scripts/predict_tartunlp.py --pairs outputs/pairs/SV.pairs.tsv \
+    --adapter_dir $DRIVE/axolotl_models/ru/classification --out $DATA/preds/SV.tartunlp_ru.tsv
+$PY scripts/evaluate_subtask2.py --pred $DATA/preds/SV.tartunlp_ru.tsv --threshold 0.35 --sweep
+$PY scripts/make_submission.py --pred SV=$DATA/preds/SV.tartunlp_ru.tsv --threshold 0.35 \
+    --data_dir $DATA/dev --out submissions/st2_tartunlp
 ```
 
-`convert_data.py` y `evaluate_subtask2.py` solo necesitan pandas y scikit-learn.
-`predict_tartunlp.py` necesita el entorno de TartuNLP (torch 2.1.2, transformers 4.35.2, adapters 0.1.0).
+¿Por qué un venv aparte en Colab? TartuNLP necesita torch 2.1.2 + transformers 4.35.2 + adapters 0.1.0,
+y torch 2.1.2 no existe para el Python 3.12 de Colab.
 
 ## Datos dev (SV)
 
