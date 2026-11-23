@@ -4,6 +4,7 @@
 pyproject.toml        hace instalable el paquete semeval27 (pip install -e .)
 semeval27/            código reutilizable (se importa desde scripts y notebooks)
   data.py             carga los datos oficiales (usages, definitions, subtask1/2) en un DataFrame
+  preprocess.py       pipeline de entrada: fix_span, dehyphen, join_hyph, detok, ws
   pairs.py            usos → pares "definición<TAB>uso" (formato TartuNLP)
   metrics.py          F1 por palabra, F1 global, barrido de umbral, baseline "siempre 1"
 scripts/
@@ -16,6 +17,8 @@ notebooks/
   00_colab_template.ipynb          plantilla para cada experimento nuevo en Colab
   02_tartunlp_dev_subtask2.ipynb   TartuNLP-ru zero-shot sobre dev SV
   03_error_analysis.ipynb          análisis de errores (CPU)
+  04_ablation_input.ipynb          ¿ayuda la entrada limpia al modelo actual? (GPU)
+tests/                tests (python -m pytest tests)
 ```
 
 ## Cómo se trabaja
@@ -33,6 +36,7 @@ Desde `task2/semeval27_pipeline`:
 python -m venv .venv            # solo la primera vez
 .venv\Scripts\activate
 pip install -e .                # núcleo: datos, pares, métricas
+pip install -e ".[dev]"         # pytest para los tests
 pip install -e ".[tartunlp]"    # opcional: torch/transformers/adapters fijados (CPU, lento)
 ```
 

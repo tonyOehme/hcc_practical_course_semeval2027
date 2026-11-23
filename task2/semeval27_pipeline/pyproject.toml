@@ -39,6 +39,7 @@ tartunlp = [
     "pyarrow==14.0.2",
 ]
 notebooks = ["ipykernel", "matplotlib"]
+dev = ["pytest"]
 
 [tool.setuptools]
 packages = ["semeval27"]
